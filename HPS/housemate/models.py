@@ -19,7 +19,7 @@ class ShareProfile(models.Model):
     dislikes = models.CharField(max_length=150)
 
 #Landlord profile
-class Landlord(models.Model):
+class Landlord(User):
     ll_username = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
