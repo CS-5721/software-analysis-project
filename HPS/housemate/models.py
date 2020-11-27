@@ -1,83 +1,88 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
 # User Tabel
 class User(models.Model):
     username = models.CharField(max_length=50, unique=True) 
-    email = models.CharField(max_length=255)  #default null=False equivalent of NOT NULL
+    email = models.EmailField(max_length=75)
     phone = models.CharField(max_length=20)
     password = models.CharField(max_length=60)
 
     def __str__(self): 
         return self.username
 
+#Habits traits
+class Habits(models.Model):
+    traits = models.CharField(max_length=50) 
+    
+    def __str__(self):
+        return self.traits
+    
 #Share Profiles
 class ShareProfile(models.Model):
-    username = models.ForeignKey(User, on_delete=models.CASCADE, related_name='+')
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='+', unique=True)
     #Not sure who to map the habits: smoking, drinking, Pet
-    habits = models.CharField(max_length=150)
-    likes = models.CharField(max_length=150)
-    dislikes = models.CharField(max_length=150)
+    habits = models.ManyToManyField(Habits)
+    likes = models.CharField(max_length=150, null=True)
+    dislikes = models.CharField(max_length=150, null=True)
 
+    
 #Landlord profile
-class Landlord(User):
-    ll_username = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        primary_key=True, 
-        related_name='+'
-    )
+class Landlord(models.Model):
+    uname = models.OneToOneField(User, on_delete=models.CASCADE, related_name='+', unique=True)
     rtb_id = models.IntegerField()
 
     def __str__(self):
-        return self.ll_username
+        return self.uname
 
 
 #property 
 class Property(models.Model):
     #id is a primary key here by default
-    owner_username = models.ForeignKey(User, on_delete=models.CASCADE, related_name='+')
+    ownername = models.OneToOneField(Landlord, on_delete=models.CASCADE, related_name='+')
     address = models.CharField(max_length=255)
-    description = models.CharField(max_length=1000)
+    description = models.TextField()
 
     def __str__(self):
-        return self.owner_username
+        return self.ownername
 
 #Rental Property
-class RentalProperty(Property):
-    rental_id = models.ForeignKey(Property, on_delete=models.CASCADE, primary_key=True, related_name='+')
+class RentalProperty(models.Model):
+    rentID = models.OneToOneField(Property, on_delete=models.CASCADE, related_name='+')
     rent = models.IntegerField()
 
 #Sale property
-class SaleProperty(Property):
-    sale_id = models.ForeignKey(Property, on_delete=models.CASCADE, primary_key=True, related_name='+')
+class SaleProperty(models.Model):
+    saleID = models.OneToOneField(Property, on_delete=models.CASCADE, related_name='+')
     price = models.IntegerField()
 
+
 #Share Property
-class ShareProperty(Property):
+class ShareProperty(models.Model):
+    shareID = models.OneToOneField(Property, on_delete=models.CASCADE, related_name='+')
     RENT_TYPE = (
         ('W', 'Weekly'),
         ('M', 'Monthly'),
     )
-    share_id = models.ForeignKey(Property, on_delete=models.CASCADE, primary_key=True, related_name='+')
     rent = models.IntegerField()
     rent_type = models.CharField(max_length=1, choices=RENT_TYPE)
 
 #Advertisement
 class Advertisement(models.Model):
-    adv_id = models.ForeignKey(
-        Property,
-        on_delete=models.CASCADE,
-        related_name='+',
-        primary_key=True
-    )
+    property_id = models.OneToOneField(Property, on_delete=models.CASCADE, related_name='+')
+
+    def __str__(self):
+        return self.property_id
 
 class Media(models.Model):
-    advt_id = models.ForeignKey(Advertisement, on_delete=models.CASCADE, related_name='+')
+    adv_id = models.OneToOneField(Advertisement, on_delete=models.CASCADE, related_name='+', unique=True)
     TYPE = (
         ('P', 'Photos'),
         ('V', 'Videos'),
         ('O', 'Other'),
     )
-    #How this to be int not char?
     media_type = models.CharField(max_length=1, choices=TYPE)
-    location = models.CharField(max_length=100)
+    filename = models.FileField(upload_to='media/')
+
+    def __str__(self):
+        return self.media_type
