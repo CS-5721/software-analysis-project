@@ -51,8 +51,8 @@ def admin_log(request):
             form=LoginForm()
         return render(request, 'registration/dashboard.html',{'form':form})
     
-
-@login_required# checks if user is authenticated
+# checks if user is authenticated
+@login_required
 def myboard(request):
     return render(request, 'accounts/mydashboard.html', {'section': 'myboard'})
 
