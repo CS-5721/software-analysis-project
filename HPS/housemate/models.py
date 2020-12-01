@@ -1,3 +1,88 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
-# Create your models here.
+# User Tabel
+class User(models.Model):
+    username = models.CharField(max_length=50, unique=True) 
+    email = models.EmailField(max_length=75)
+    phone = models.CharField(max_length=20)
+    password = models.CharField(max_length=60)
+
+    def __str__(self): 
+        return self.username
+
+#Habits traits
+class Habits(models.Model):
+    traits = models.CharField(max_length=50) 
+    
+    def __str__(self):
+        return self.traits
+    
+#Share Profiles
+class ShareProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='+', unique=True)
+    #Not sure who to map the habits: smoking, drinking, Pet
+    habits = models.ManyToManyField(Habits)
+    likes = models.CharField(max_length=150, null=True)
+    dislikes = models.CharField(max_length=150, null=True)
+
+    
+#Landlord profile
+class Landlord(models.Model):
+    uname = models.OneToOneField(User, on_delete=models.CASCADE, related_name='+', unique=True)
+    rtb_id = models.IntegerField()
+
+    def __str__(self):
+        return self.uname
+
+
+#property 
+class Property(models.Model):
+    #id is a primary key here by default
+    ownername = models.OneToOneField(Landlord, on_delete=models.CASCADE, related_name='+')
+    address = models.CharField(max_length=255)
+    description = models.TextField()
+
+    def __str__(self):
+        return self.ownername
+
+#Rental Property
+class RentalProperty(models.Model):
+    rentID = models.OneToOneField(Property, on_delete=models.CASCADE, related_name='+')
+    rent = models.IntegerField()
+
+#Sale property
+class SaleProperty(models.Model):
+    saleID = models.OneToOneField(Property, on_delete=models.CASCADE, related_name='+')
+    price = models.IntegerField()
+
+
+#Share Property
+class ShareProperty(models.Model):
+    shareID = models.OneToOneField(Property, on_delete=models.CASCADE, related_name='+')
+    RENT_TYPE = (
+        ('W', 'Weekly'),
+        ('M', 'Monthly'),
+    )
+    rent = models.IntegerField()
+    rent_type = models.CharField(max_length=1, choices=RENT_TYPE)
+
+#Advertisement
+class Advertisement(models.Model):
+    property_id = models.OneToOneField(Property, on_delete=models.CASCADE, related_name='+')
+
+    def __str__(self):
+        return self.property_id
+
+class Media(models.Model):
+    adv_id = models.OneToOneField(Advertisement, on_delete=models.CASCADE, related_name='+', unique=True)
+    TYPE = (
+        ('P', 'Photos'),
+        ('V', 'Videos'),
+        ('O', 'Other'),
+    )
+    media_type = models.CharField(max_length=1, choices=TYPE)
+    filename = models.FileField(upload_to='media/')
+
+    def __str__(self):
+        return self.media_type
