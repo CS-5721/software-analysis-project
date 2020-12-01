@@ -23,7 +23,7 @@ class registerForm(forms.ModelForm):
             raise forms.ValidationError("Passwords don't match.")
         return cd['password2']
 
-class caretakerRegisterForm(forms.ModelForm):
+class landlordRegisterForm(forms.ModelForm):
     password = forms.CharField(label='Password',widget=forms.PasswordInput)
     password2 = forms.CharField(label='Repeat password',widget=forms.PasswordInput)
 
