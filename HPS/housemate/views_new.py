@@ -112,7 +112,7 @@ def edit(request):
 @login_required
 @user_passes_test(lambda u: u.groups.filter(name='landlords'),login_url='/housemate')
 def profile_view(request, user_id):
-    my_profile=Profile.objects.get(pk=user_id)
+    my_profile=Profile.objects.get(hm=user_id)
     return render(request, 'accounts/profile.html',{'my_profile':my_profile})
 
 
