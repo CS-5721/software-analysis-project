@@ -26,7 +26,16 @@ class ShareProfile(models.Model):
     likes = models.CharField(max_length=150, null=True)
     dislikes = models.CharField(max_length=150, null=True)
 
-    
+# Creates a Profile model which inherits most attr from AUTH_USER_MODEL.
+class Profile(models.Model):
+    user=models.OneToOneField(settings.AUTH_USER_MODEL)#creates onetoone  relationship with the user model
+    gender=models.CharField(max_length=6,choices=(('Male','Male'),('Female','Female'),))
+    phone=models.IntegerField(default=0)
+    date_of_birth=models.DateField("DOB",help_text="YYYY-MM-DD",blank=True,null=True)
+
+    def __unicode__(self):
+        return '{} Profile'.format(self.user.username)
+  
 #Landlord profile
 class Landlord(models.Model):
     uname = models.OneToOneField(User, on_delete=models.CASCADE, related_name='+', unique=True)
