@@ -7,8 +7,10 @@ from .models import Profile
 from django.contrib import messages
 from django.contrib.auth.models import Group, User
 
-
 #  Create your views here.
+def index(request):
+        return HttpResponse("<h1>Welcome to House Mate</h1>")
+
 def user_log(request):
     # if we add request.method=='POST' is it a bug? i dont know..
     if request.method:
