@@ -1,7 +1,9 @@
 from http import HTTPStatus
 from django.test import TestCase
 from housemate.forms import registerForm
+import django.db
 
+django.db.connection.creation.create_test_db # in memory db
 
 class RegisterFormTests(TestCase):
     def test_get(self):

@@ -1,6 +1,8 @@
 from django.test import TestCase
 from housemate.models import User, Habits, ShareProfile
+import django.db
 
+django.db.connection.creation.create_test_db # in memory db
 
 class UserModelTest(TestCase):
     @classmethod
