@@ -1,7 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.conf import settings
 
-# User Tabel
+# User Table
 class User(models.Model):
     username = models.CharField(max_length=50, unique=True) 
     email = models.EmailField(max_length=75)
@@ -74,6 +75,7 @@ class ShareProperty(models.Model):
     )
     rent = models.IntegerField()
     rent_type = models.CharField(max_length=1, choices=RENT_TYPE)
+
 
 #Advertisement
 class Advertisement(models.Model):

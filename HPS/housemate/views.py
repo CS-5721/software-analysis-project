@@ -7,7 +7,6 @@ from .models import Profile
 from django.contrib import messages
 from django.contrib.auth.models import Group, User
 
-#  Create your views here.
 def index(request):
         return render(request, "housemate/index.html")
 
@@ -52,6 +51,7 @@ def admin_login(request):
         else:
             form=LoginForm()
             return render(request, 'registration/login.html',{'form':form})
+        return render(request, 'registration/dashboard.html',{'form':form})
     
 # checks if user is authenticated
 @login_required
@@ -64,14 +64,19 @@ def myboard(request):
 def register(request):
     if request.method == "POST":
         user_form = registerForm(request.POST)
+    return render(request, 'accounts/mydashboard.html', {'section': 'myboard'})
+
+
+def register(request):
+    if request.method:
+        user_form=registerForm(request.POST)
         if user_form.is_valid():
             new_user=user_form.save(commit=False)
             new_user.set_password(user_form.cleaned_data['password'])
             new_user.save()
-            profile=Profile.objects.create(user=new_user) # creates a blank profile ? What does this mean??
+            profile=Profile.objects.create(user=new_user) # creates a blank profile
             new_user.groups.add(Group.objects.get(name='tenant'))
             return render(request, 'registration/register_done.html')
-            # return HttpResponseRedirect("So far so good")
         else:
             return render(request, 'registration/register.html', {
                 "form": user_form
@@ -82,6 +87,16 @@ def register(request):
 
 def registerLandlord(request):
     if request.method == "POST":
+            profile=Profile.objects.create(user=new_user)# creates a blank profile
+            new_user.groups.add(Group.objects.get(name='tenant'))
+            return render(request, 'registration/register_done.html',{'new_user':new_user})
+
+    user_form=registerForm()
+    return render(request, 'registration/register.html', {'user_form':user_form})
+
+
+def registerLandlord(request):
+    if request.method:
         landlord_form=landlordRegisterForm(request.POST)
         if landlord_form.is_valid():
             new_landlord=landlord_form.save(commit=False)
@@ -118,11 +133,9 @@ def edit(request):
     else:
         user_form=userEditForm(instance=request.user)
         profile_form=profileEditForm(instance=request.user.profile)
-    return render(request, 'accounts/edit.html', {
-        'user_form':user_form,
-        'profile_form':profile_form
-        })
-
+    return render(request, 'accounts/edit.html',
+                  {'user_form':user_form,
+                   'profile_form':profile_form})
 
 @login_required
 @user_passes_test(lambda u: u.groups.filter(name='landlords'),login_url='/housemate')
