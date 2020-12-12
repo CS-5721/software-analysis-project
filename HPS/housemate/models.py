@@ -33,7 +33,7 @@ class Profile(models.Model):
     date_of_birth=models.DateField("DOB",help_text="YYYY-MM-DD",blank=True,null=True)
 
     def __unicode__(self):
-        return '{} Profile'.format(self.user.username)
+        return '{} Profile'.format(self.user) #removed self.user.username
      
 #Landlord profile
 class Landlord(models.Model):

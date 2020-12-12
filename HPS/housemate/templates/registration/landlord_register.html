@@ -1,0 +1,13 @@
+{% extends "housemate/layout.html" %}
+
+{% block body %}
+<div>
+    <h2>Landlord Registration</h2>
+    <form method="POST" class="form-group">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success">Register</button>
+    </form>
+</div>
+
+{% endblock %}
