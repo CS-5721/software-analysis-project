@@ -6,7 +6,7 @@
 `$git clone https://github.com/CS-5721/software-analysis-project.git`
 
 - Step 2:
-`$cd software-analysis-project/HSP`
+`$cd software-analysis-project/HPS`
 
 - Step 3:
 `$python manage.py runserver`
