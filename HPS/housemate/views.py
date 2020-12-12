@@ -87,16 +87,6 @@ def register(request):
 
 def registerLandlord(request):
     if request.method == "POST":
-            profile=Profile.objects.create(user=new_user)# creates a blank profile
-            new_user.groups.add(Group.objects.get(name='tenant'))
-            return render(request, 'registration/register_done.html',{'new_user':new_user})
-
-    user_form=registerForm()
-    return render(request, 'registration/register.html', {'user_form':user_form})
-
-
-def registerLandlord(request):
-    if request.method:
         landlord_form=landlordRegisterForm(request.POST)
         if landlord_form.is_valid():
             new_landlord=landlord_form.save(commit=False)
