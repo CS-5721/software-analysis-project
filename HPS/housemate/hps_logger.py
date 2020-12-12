@@ -26,8 +26,8 @@ class Logger():
             Logger.__instance = self
 
     def log(self, message):
-        #if not settings.DEBUG:
-        #    return
+        if not settings.DEBUG:
+            return
         now = time.asctime( time.localtime(time.time()) )
         # Printing self to demonstrate one instance is in use
         eprint(now, self, message, sep=" - ")
