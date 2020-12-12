@@ -7,8 +7,12 @@ from .models import Profile
 from django.contrib import messages
 from django.contrib.auth.models import Group, User
 
+from housemate.hps_logger import *
+logger = Logger.instance()
+
 def index(request):
-        return render(request, "housemate/index.html")
+    logger.log("Front page requested")
+    return render(request, "housemate/index.html")
 
 def user_login(request):
     # if we add request.method=='POST' is it a bug? i dont know..

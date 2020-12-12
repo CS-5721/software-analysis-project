@@ -2,6 +2,11 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 
+from housemate.hps_logger import *
+logger = Logger.instance()
+
+logger.log("Initialising model")
+
 # User Table
 class User(models.Model):
     username = models.CharField(max_length=50, unique=True) 
