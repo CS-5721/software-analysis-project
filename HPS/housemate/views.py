@@ -61,10 +61,10 @@ def myboard(request):
 
 
 
-def register(request):
-    if request.method == "POST":
-        user_form = registerForm(request.POST)
-    return render(request, 'accounts/mydashboard.html', {'section': 'myboard'})
+#def register(request):
+#    if request.method == "POST":
+#        user_form = registerForm(request.POST)
+#    return render(request, 'accounts/mydashboard.html', {'section': 'myboard'})
 
 
 def register(request):
