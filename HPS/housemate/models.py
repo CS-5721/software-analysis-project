@@ -20,13 +20,21 @@ class Habits(models.Model):
     
 #Share Profiles
 class ShareProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='+', unique=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='+')
     #Not sure who to map the habits: smoking, drinking, Pet
     habits = models.ManyToManyField(Habits)
     likes = models.CharField(max_length=150, null=True)
     dislikes = models.CharField(max_length=150, null=True)
 
-    
+class Profile(models.Model):
+    user=models.OneToOneField(User, on_delete=models.CASCADE, related_name='+')
+    gender=models.CharField(max_length=6,choices=(('Male','Male'),('Female','Female'),))
+    phone=models.IntegerField(default=0)
+    date_of_birth=models.DateField("DOB",help_text="YYYY-MM-DD",blank=True,null=True)
+
+    def __unicode__(self):
+        return '{} Profile'.format(self.user.username)
+     
 #Landlord profile
 class Landlord(models.Model):
     uname = models.OneToOneField(User, on_delete=models.CASCADE, related_name='+', unique=True)
