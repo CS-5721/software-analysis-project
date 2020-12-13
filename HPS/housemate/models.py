@@ -63,7 +63,12 @@ class Property(models.Model):
 #Rental Property
 class RentalProperty(models.Model):
     rentID = models.OneToOneField(Property, on_delete=models.CASCADE, related_name='+')
+    RENT_TYPE = (
+        ('W', 'Weekly'),
+        ('M', 'Monthly'),
+    )
     rent = models.IntegerField()
+    rent_type = models.CharField(max_length=1, choices=RENT_TYPE, default='M')
 
 #Sale property
 class SaleProperty(models.Model):
@@ -73,13 +78,8 @@ class SaleProperty(models.Model):
 
 #Share Property
 class ShareProperty(models.Model):
-    shareID = models.OneToOneField(Property, on_delete=models.CASCADE, related_name='+')
-    RENT_TYPE = (
-        ('W', 'Weekly'),
-        ('M', 'Monthly'),
-    )
-    rent = models.IntegerField()
-    rent_type = models.CharField(max_length=1, choices=RENT_TYPE)
+    shareID = models.OneToOneField(RentalProperty, on_delete=models.CASCADE, related_name='+')
+    shareProfileID = models.OneToOneField(ShareProfile, on_delete=models.CASCADE, related_name='+',null=True)
 
 
 #Advertisement
