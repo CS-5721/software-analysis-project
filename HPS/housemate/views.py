@@ -7,8 +7,12 @@ from .models import Profile
 from django.contrib import messages
 from django.contrib.auth.models import Group, User
 
+from housemate.hps_logger import *
+logger = Logger.instance()
+
 def index(request):
-        return render(request, "housemate/index.html")
+    logger.log("Front page requested")
+    return render(request, "housemate/index.html")
 
 def user_login(request):
     # if we add request.method=='POST' is it a bug? i dont know..
@@ -61,10 +65,10 @@ def myboard(request):
 
 
 
-def register(request):
-    if request.method == "POST":
-        user_form = registerForm(request.POST)
-    return render(request, 'accounts/mydashboard.html', {'section': 'myboard'})
+#def register(request):
+#    if request.method == "POST":
+#        user_form = registerForm(request.POST)
+#    return render(request, 'accounts/mydashboard.html', {'section': 'myboard'})
 
 
 def register(request):
@@ -87,16 +91,6 @@ def register(request):
 
 def registerLandlord(request):
     if request.method == "POST":
-            profile=Profile.objects.create(user=new_user)# creates a blank profile
-            new_user.groups.add(Group.objects.get(name='tenant'))
-            return render(request, 'registration/register_done.html',{'new_user':new_user})
-
-    user_form=registerForm()
-    return render(request, 'registration/register.html', {'user_form':user_form})
-
-
-def registerLandlord(request):
-    if request.method:
         landlord_form=landlordRegisterForm(request.POST)
         if landlord_form.is_valid():
             new_landlord=landlord_form.save(commit=False)

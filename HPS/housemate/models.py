@@ -2,6 +2,11 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 
+from housemate.hps_logger import *
+logger = Logger.instance()
+
+logger.log("Initialising model")
+
 # User Table
 class User(models.Model):
     username = models.CharField(max_length=50, unique=True) 
@@ -39,7 +44,7 @@ class Profile(models.Model):
 #Landlord profile
 class Landlord(models.Model):
     uname = models.OneToOneField(User, on_delete=models.CASCADE, related_name='+', unique=True)
-    rtb_id = models.IntegerField()
+    rtb_id = models.IntegerField(unique=True, null=False)
 
     def __str__(self):
         return self.uname
@@ -48,7 +53,7 @@ class Landlord(models.Model):
 #property 
 class Property(models.Model):
     #id is a primary key here by default
-    ownername = models.OneToOneField(Landlord, on_delete=models.CASCADE, related_name='+')
+    ownername = models.ForeignKey(Landlord, on_delete=models.CASCADE, related_name='+')
     address = models.CharField(max_length=255)
     description = models.TextField()
 
@@ -58,7 +63,12 @@ class Property(models.Model):
 #Rental Property
 class RentalProperty(models.Model):
     rentID = models.OneToOneField(Property, on_delete=models.CASCADE, related_name='+')
+    RENT_TYPE = (
+        ('W', 'Weekly'),
+        ('M', 'Monthly'),
+    )
     rent = models.IntegerField()
+    rent_type = models.CharField(max_length=1, choices=RENT_TYPE, default='M')
 
 #Sale property
 class SaleProperty(models.Model):
@@ -68,13 +78,8 @@ class SaleProperty(models.Model):
 
 #Share Property
 class ShareProperty(models.Model):
-    shareID = models.OneToOneField(Property, on_delete=models.CASCADE, related_name='+')
-    RENT_TYPE = (
-        ('W', 'Weekly'),
-        ('M', 'Monthly'),
-    )
-    rent = models.IntegerField()
-    rent_type = models.CharField(max_length=1, choices=RENT_TYPE)
+    shareID = models.OneToOneField(RentalProperty, on_delete=models.CASCADE, related_name='+')
+    shareProfileID = models.OneToOneField(ShareProfile, on_delete=models.CASCADE, related_name='+',null=True)
 
 
 #Advertisement
@@ -96,3 +101,38 @@ class Media(models.Model):
 
     def __str__(self):
         return self.media_type
+
+# Iterators are built-ins in Python.
+# Since Python features dynamic typing, its Iterators do not need
+# templating in their implementation - a container can contain
+# heterogeneous types and objects.
+# This iterator wraps the ORM iterator by "prefetching" (JOINing)
+# related tables for a query before returning the iterator instance
+class MatchedHouseIterator():
+    def __init__(self, query):
+        self.results = query.prefetch_related().all().iterator()
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        try:
+            return next(self.results)
+        except:
+            raise StopIteration
+
+# This simple search wrapper factory could be expanded to instantiate
+# any type of property iterator based on any arbitrary criteria. It will
+# currently return sale or rent properties based on passed search terms.
+class MatchedHouseIteratorFactory():
+    def __init__(self, terms):
+        if "price" in terms:
+            self.query = SaleProperty.objects.filter(price__lte = terms["price"])
+        elif "rent" in terms:
+            self.query = RentalProperty.objects.filter(rent__lte = terms["rent"])
+        else:
+            raise("Unable to resolve search terms")
+
+    def getIterator(self):
+        return MatchedHouseIterator(self.query)
+
