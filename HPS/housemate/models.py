@@ -101,3 +101,38 @@ class Media(models.Model):
 
     def __str__(self):
         return self.media_type
+
+# Iterators are built-ins in Python.
+# Since Python features dynamic typing, its Iterators do not need
+# templating in their implementation - a container can contain
+# heterogeneous types and objects.
+# This iterator wraps the ORM iterator by "prefetching" (JOINing)
+# related tables for a query before returning the iterator instance
+class MatchedHouseIterator():
+    def __init__(self, query):
+        self.results = query.prefetch_related().all().iterator()
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        try:
+            return next(self.results)
+        except:
+            raise StopIteration
+
+# This simple search wrapper factory could be expanded to instantiate
+# any type of property iterator based on any arbitrary criteria. It will
+# currently return sale or rent properties based on passed search terms.
+class MatchedHouseIteratorFactory():
+    def __init__(self, terms):
+        if "price" in terms:
+            self.query = SaleProperty.objects.filter(price__lte = terms["price"])
+        elif "rent" in terms:
+            self.query = RentalProperty.objects.filter(rent__lte = terms["rent"])
+        else:
+            raise("Unable to resolve search terms")
+
+    def getIterator(self):
+        return MatchedHouseIterator(self.query)
+
