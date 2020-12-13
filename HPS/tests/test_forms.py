@@ -1,34 +1,27 @@
 from http import HTTPStatus
 from django.test import TestCase
-from housemate.forms import registerForm
+from housemate.forms import LoginForm
+from housemate.models import User as UserModel
 import django.db
 
 django.db.connection.creation.create_test_db # in memory db
 
-class RegisterFormTests(TestCase):
-    def test_get(self):
-        response = self.client.get("/housemate/register")
+class TestLoginForm(TestCase):
+    def test_valid_form(self):
+        w = UserModel.objects.create(username="anyuser",
+                                    email="test@test.com",
+                                    phone="9999999999",
+                                    password="123456")
+        data = {'username': w.username, 'password': w.password, }
+        form = LoginForm(data=data)
+        self.assertTrue(form.is_valid())
 
-        self.assertEqual(response.status_code, HTTPStatus.OK)
-        #self.assertContains(response, "<h1>html for the page</h1>", html=True)
-
-    def test_post_success(self):
-        response = self.client.post(
-            "/housemate/register", data={"user":"","password": "Login@123","password2": "Login@123","email":""}
-        )
-
-        self.assertEqual(response.status_code, HTTPStatus.OK)
-        # This route does not redirect...
-        #self.assertEqual(response.status_code, HTTPStatus.FOUND)
-        #self.assertEqual(response["password2"], "/registration/register_done.html")
-
-    def test_post_error(self):
-        response = self.client.post(
-            "/housemate/register", data={"password": "Login@123","password2": "Login2222"}
-        )
-
-        self.assertEqual(response.status_code, HTTPStatus.OK)
-        self.assertContains(
-            response, "Passwords don't match.", html=True
-        )
+    def test_invalid_form(self):
+        w = UserModel.objects.create(username="",
+                                     email="test@test.com",
+                                     phone="9999999999",
+                                     password="")
+        data = {'username': w.username, 'password': w.password, }
+        form = LoginForm(data=data)
+        self.assertFalse(form.is_valid())
 

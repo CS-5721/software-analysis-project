@@ -66,6 +66,21 @@ class UserModelTest(TestCase):
         user = User.objects.get(id=1)
         expected_object_name = f'{user.password}'
         self.assertNotEqual(expected_object_name, str(user))
+        
+    def create_user_model(self,
+                        username="anyuser",
+                        email="test@test.com",
+                        phone="9999999999",
+                        password="123456"):
+        return User.objects.create(username=username,
+                                   email=email,
+                                   phone=phone,
+                                   password=password)
+
+    def test_user_model_creation(self):
+        w = self.create_user_model()
+        self.assertTrue(isinstance(w, User))
+        self.assertEqual(w.__str__(), w.username)
 
 
 
