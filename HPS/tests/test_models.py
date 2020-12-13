@@ -1,8 +1,15 @@
 from django.test import TestCase
-from housemate.models import User, Habits, ShareProfile
+from housemate.models import User, Habits, ShareProfile, Property, RentalProperty, Landlord, MatchedHouseIteratorFactory
 import django.db
+import random
+import pprint
 
 django.db.connection.creation.create_test_db # in memory db
+
+from housemate.hps_logger import *
+logger = Logger.instance()
+
+pp = pprint.PrettyPrinter(indent=4)
 
 class UserModelTest(TestCase):
     @classmethod
@@ -73,5 +80,27 @@ class HabitsModelTest(TestCase):
         expected_object_name = f'{habit.traits}'
         self.assertEqual(expected_object_name, str(habit))
 
+class FactoryTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        u = User.objects.create(username="Mr Rugg", email="rugg@example.com", phone="12345678", password="avarice")
+        ll = Landlord.objects.create(uname_id=u.id, rtb_id=666)
+        #pp.pprint(ll)
+        #print(dir(ll))
+        for i in range(100):
+            rent = random.randint(800, 2500)
+            p = Property.objects.create(ownername_id=ll.uname.id,address="Hovel Avenue", description="A luvverly house")
+            r = RentalProperty.objects.create(rentID_id=p.id, rent=rent)
+
+
+    def test_house_factory(self):
+        count = 0
+        i = MatchedHouseIteratorFactory({"rent":1500}).getIterator()
+        #print(dir(i))
+        for h in i: # Python's for can use Iterator instances
+            count += 1
+            self.assertLessEqual(h.rent, 1500)
+        #print(count)
+        self.assertGreaterEqual(count, 1)
 
 
