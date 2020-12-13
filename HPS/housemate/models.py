@@ -44,7 +44,7 @@ class Profile(models.Model):
 #Landlord profile
 class Landlord(models.Model):
     uname = models.OneToOneField(User, on_delete=models.CASCADE, related_name='+', unique=True)
-    rtb_id = models.IntegerField()
+    rtb_id = models.IntegerField(unique=True, null=False)
 
     def __str__(self):
         return self.uname
@@ -53,7 +53,7 @@ class Landlord(models.Model):
 #property 
 class Property(models.Model):
     #id is a primary key here by default
-    ownername = models.OneToOneField(Landlord, on_delete=models.CASCADE, related_name='+')
+    ownername = models.ForeignKey(Landlord, on_delete=models.CASCADE, related_name='+')
     address = models.CharField(max_length=255)
     description = models.TextField()
 
