@@ -119,3 +119,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Allow noisy manage.py tests and services
+NOSE_ARGS = ['--nocapture',
+             '--nologcapture',]
+
